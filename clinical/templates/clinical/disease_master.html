@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARAM - Disease Master</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f5;
+            color: #173b2b;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 2fr 1.5fr 1fr 1fr;
+            gap: 12px;
+            align-items: end;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5d0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 42px;
+        }
+
+        .checkbox input {
+            width: auto;
+        }
+
+        button {
+            border: none;
+            border-radius: 10px;
+            padding: 12px 18px;
+            background: #176b3a;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #d8e2dc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #e9f3ed;
+        }
+
+        .message {
+            background: #e7f6ec;
+            border: 1px solid #b8dfc3;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ncd {
+            font-weight: bold;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 10px;
+            color: #14532d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 800px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>VARAM - Disease Master</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+
+        <h2>Add Disease</h2>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-row">
+
+                <div>
+                    <label>Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div>
+                    <label>Tamil Name</label>
+                    {{ form.tamil_name }}
+                </div>
+
+                <div>
+                    <label>Category</label>
+                    {{ form.category }}
+                </div>
+
+                <div class="checkbox">
+                    {{ form.is_ncd }}
+                    <label>NCD</label>
+                </div>
+
+                <div class="checkbox">
+                    {{ form.is_active }}
+                    <label>Active</label>
+                </div>
+
+            </div>
+
+            <br>
+
+            <button type="submit">
+                Add Disease
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Disease List</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Disease</th>
+                    <th>Tamil Name</th>
+                    <th>Category</th>
+                    <th>NCD</th>
+                    <th>Active</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for disease in diseases %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>{{ disease.name }}</td>
+
+                    <td>{{ disease.tamil_name }}</td>
+
+                    <td>{{ disease.category }}</td>
+
+                    <td class="{% if disease.is_ncd %}ncd{% endif %}">
+                        {% if disease.is_ncd %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if disease.is_active %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6">
+                        No diseases added yet.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <a href="/" class="back">
+        ← Back to Daily Census
+    </a>
+
+</div>
+
+</body>
+</html>

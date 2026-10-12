@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARAM - Centre Profile</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #245c3a;
+            margin-top: 0;
+        }
+
+        .field {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox input {
+            width: auto;
+        }
+
+        .save-button {
+            margin-top: 10px;
+            padding: 11px 24px;
+            background: #245c3a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #245c3a;
+            text-decoration: none;
+        }
+
+        .success-message {
+            margin: 15px 0;
+            padding: 12px;
+            background: #e8f5e9;
+            color: #245c3a;
+            border: 1px solid #b7d7bd;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/" class="back-link">← Back to Daily Census</a>
+
+    <h1>VARAM - Centre Profile</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success-message">
+                ✓ {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="field">
+            <label for="{{ form.centre_name.id_for_label }}">
+                Centre Name
+            </label>
+            {{ form.centre_name }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.centre_address.id_for_label }}">
+                Centre Address
+            </label>
+            {{ form.centre_address }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.doctor_name.id_for_label }}">
+                Doctor Name
+            </label>
+            {{ form.doctor_name }}
+        </div>
+
+        <div class="field">
+            <label for="{{ form.mobile_number.id_for_label }}">
+                Mobile Number
+            </label>
+            {{ form.mobile_number }}
+        </div>
+
+        <div class="field checkbox">
+            {{ form.is_active }}
+            <label for="{{ form.is_active.id_for_label }}">
+                Active Centre
+            </label>
+        </div>
+
+        <button type="submit" class="save-button">
+            Save Centre Profile
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

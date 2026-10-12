@@ -1,0 +1,6 @@
+{% extends "registers/base.html" %}
+{% block title %}Delete Entry ? VARAM{% endblock %}
+{% block content %}
+<div class="card"><h1>Delete Entry</h1><p>Delete entry <strong>{{ entry.display_serial }}</strong> from <strong>{{ register.title }}</strong>?</p><p>This action cannot be undone.</p>
+<form method="post">{% csrf_token %}<div class="actions"><button class="btn" type="submit">Confirm Delete</button><a class="btn secondary" href="{% url 'registers:detail' register_id=register.pk %}">Cancel</a></div></form></div>
+{% endblock %}

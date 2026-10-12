@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARAM - Daily NCD Report</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f2;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #245c3a;
+            margin-top: 0;
+        }
+
+        .date-box {
+            margin-bottom: 20px;
+        }
+
+        .date-box input {
+            padding: 8px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th {
+            background: #245c3a;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        td:nth-child(2) {
+            text-align: left;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 7px;
+            box-sizing: border-box;
+        }
+
+        .total-cell {
+            font-weight: bold;
+            background: #f0f5ef;
+        }
+
+        tfoot td {
+            font-weight: bold;
+            background: #e7eee5;
+        }
+
+        .save-button {
+            margin-top: 20px;
+            padding: 11px 24px;
+            background: #245c3a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #19472c;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            color: #245c3a;
+            text-decoration: none;
+        }
+
+        .success-message {
+            margin: 15px 0;
+            padding: 12px;
+            background: #e8f5e9;
+            color: #245c3a;
+            border: 1px solid #b7d7bd;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/" class="back-link">← Back to Daily Census</a>
+
+    <h1>VARAM - Daily NCD Report</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success-message">
+                ✓ {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="date-box">
+        <label for="report-date"><strong>Date:</strong></label>
+        <input
+            type="date"
+            id="report-date"
+            value="{{ selected_date|date:'Y-m-d' }}"
+        >
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <table id="ncd-table">
+
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Name of the Disease</th>
+                    <th>Male</th>
+                    <th>Female</th>
+                    <th>Child</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in rows %}
+                <tr class="ncd-row">
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>{{ row.name }}</td>
+
+                    <td>
+                        {{ row.form.male_count }}
+                    </td>
+
+                    <td>
+                        {{ row.form.female_count }}
+                    </td>
+
+                    <td>
+                        {{ row.form.child_count }}
+                    </td>
+
+                    <td class="total-cell">
+                        <span class="row-total">0</span>
+                    </td>
+
+                </tr>
+                {% endfor %}
+
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td colspan="2">GRAND TOTAL</td>
+                    <td id="male-total">0</td>
+                    <td id="female-total">0</td>
+                    <td id="child-total">0</td>
+                    <td id="grand-total">0</td>
+                </tr>
+            </tfoot>
+
+        </table>
+
+        <button type="submit" class="save-button">
+            Save / Update NCD Report
+        </button>
+
+    </form>
+
+</div>
+
+<script>
+function updateTotals() {
+
+    let maleTotal = 0;
+    let femaleTotal = 0;
+    let childTotal = 0;
+
+    document.querySelectorAll(".ncd-row").forEach(function(row) {
+
+        const inputs = row.querySelectorAll('input[type="number"]');
+
+        const male = parseInt(inputs[0]?.value || 0);
+        const female = parseInt(inputs[1]?.value || 0);
+        const child = parseInt(inputs[2]?.value || 0);
+
+        const rowTotal = male + female + child;
+
+        row.querySelector(".row-total").textContent = rowTotal;
+
+        maleTotal += male;
+        femaleTotal += female;
+        childTotal += child;
+    });
+
+    document.getElementById("male-total").textContent = maleTotal;
+    document.getElementById("female-total").textContent = femaleTotal;
+    document.getElementById("child-total").textContent = childTotal;
+    document.getElementById("grand-total").textContent =
+        maleTotal + femaleTotal + childTotal;
+}
+
+
+document.querySelectorAll('#ncd-table input[type="number"]').forEach(function(input) {
+    input.addEventListener("input", updateTotals);
+});
+
+
+document.getElementById("report-date").addEventListener("change", function() {
+    window.location.href = "/ncd/daily/?date=" + this.value;
+});
+
+
+updateTotals();
+</script>
+
+</body>
+</html>

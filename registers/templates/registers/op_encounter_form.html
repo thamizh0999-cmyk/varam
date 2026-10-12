@@ -1,0 +1,54 @@
+{% extends "registers/base.html" %}
+{% block content %}
+<div style="max-width:650px;margin:25px auto;padding:20px;">
+  <h2>OP Encounter</h2>
+  <p><strong>Patient:</strong> {{ patient.name }}</p>
+  <p><strong>OP Number:</strong> {{ patient.op_number }}</p>
+  <p><strong>Age / Category:</strong> {{ patient.age }} / {% if patient.is_child %}Child{% else %}Adult{% endif %}</p>
+  <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
+
+  {% if encounter_warning %}
+    <p style="padding:9px;background:#fff0e0;">{{ encounter_warning }}</p>
+  {% endif %}
+  {% if messages %}
+    {% for message in messages %}
+      <p style="padding:9px;background:#fff0e0;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <label>Encounter date</label>
+    <input type="date" name="encounter_date" value="{{ today|date:'Y-m-d' }}" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+
+    <label>Session</label>
+    <select name="session" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+      <option value="MORNING">Morning</option>
+      <option value="EVENING">Evening</option>
+    </select>
+
+    <label>Case type</label>
+    <select name="case_type" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+      <option value="NEW" {% if patient.registered_date == today %}selected{% endif %} {% if patient.registered_date != today %}disabled{% endif %}>New case</option>
+      <option value="OLD" {% if patient.registered_date != today %}selected{% endif %}>Old case</option>
+    </select>
+
+    <label>Diagnosis</label>
+    <select name="diagnosis" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+      <option value="">-- Select diagnosis --</option>
+      {% for diagnosis in diagnoses %}
+        <option value="{{ diagnosis.pk }}">{{ diagnosis.name }}{% if diagnosis.tamil_name %} ? {{ diagnosis.tamil_name }}{% endif %}</option>
+      {% endfor %}
+    </select>
+
+    <label>Medicine prescribed</label>
+    <textarea name="medicine" rows="4" placeholder="Enter prescribed medicine and dosage" style="display:block;width:100%;padding:9px;margin:5px 0 18px;box-sizing:border-box;"></textarea>
+
+    <button type="submit" style="padding:11px 20px;">Save OP Encounter</button>
+  </form>
+
+  <p style="margin-top:18px;"><a href="{% url 'registers:patient_therapy_create' patient.id %}">Continue to Therapy Selection</a></p>
+  <p><a href="{% url 'registers:nominal_list' %}">Back to Nominal Register</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARAM - ANC Register</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f4;
+            margin: 0;
+            padding: 20px;
+            color: #26332a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            background: #1f5f3b;
+            color: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px 0;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #1f5f3b;
+            color: white;
+            margin-right: 8px;
+        }
+
+        .button.secondary {
+            background: #6c757d;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #777;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: left;
+        }
+
+        th {
+            background: #eef4ef;
+        }
+
+        .count {
+            font-weight: bold;
+            color: #1f5f3b;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>VARAM - ANC Register</h1>
+        <p>Antenatal Beneficiary Register</p>
+    </div>
+
+    <div class="card">
+        <a href="/" class="button secondary">← Daily Census</a>
+        <a href="/centre/" class="button secondary">Centre Profile</a>
+    </div>
+    <a href="{% url 'anc_monthly_report' %}"
+   style="display:inline-block; padding:10px 16px; background:#246b4a; color:white; text-decoration:none; border-radius:7px; margin-left:8px;">
+    ANC Monthly Report
+</a>
+
+    <div class="card">
+        <h2>Registered ANC Patients</h2>
+
+        <p>
+            Total registered patients:
+            <span class="count">{{ patients|length }}</span>
+        </p>
+
+        {% if patients %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sl. No</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Mobile</th>
+                    <th>Pigmi No</th>
+                    <th>LMP</th>
+                    <th>EDD</th>
+                    <th>Visits</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for patient in patients %}
+
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+    <a href="{% url 'anc_patient_detail' patient.id %}">
+        {{ patient.name }}
+    </a>
+</td>
+                    <td>{{ patient.age }}</td>
+                    <td>{{ patient.mobile_number|default:"-" }}</td>
+                    <td>{{ patient.pigmi_no|default:"-" }}</td>
+                    <td>{{ patient.lmp|date:"d-m-Y" }}</td>
+                    <td>{{ patient.edd|date:"d-m-Y" }}</td>
+                    <td>{{ patient.visits.count }}</td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+
+        {% else %}
+
+        <div class="empty">
+            <h3>No ANC patients registered yet</h3>
+            <p>ANC patient registration will be added next.</p>
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

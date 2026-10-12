@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete IP Patient - VARAM</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f5;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .card {
+            max-width: 500px;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 18px rgba(0,0,0,.08);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #b42318;
+        }
+
+        .patient {
+            background: #f3f4f3;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            line-height: 1.7;
+        }
+
+        button,
+        a {
+            display: inline-block;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button {
+            background: #b42318;
+            color: white;
+        }
+
+        a {
+            background: #e8ece8;
+            color: #333;
+            margin-left: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Delete IP Patient?</h2>
+
+    <p>
+        Are you sure you want to delete this patient from the IP register?
+    </p>
+
+    <div class="patient">
+        <strong>{{ patient.name }}</strong><br>
+        Sex: {{ patient.get_sex_display }}<br>
+        Admission: {{ patient.admission_date|date:"d-m-Y" }}<br>
+        Session: {{ patient.get_admission_session_display }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <button type="submit">
+            Yes, Delete
+        </button>
+
+        <a href="{% url 'ip_register' %}">
+            Cancel
+        </a>
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VARAM — Dashboard</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #f3f6f4; color: #20352b; }
+        header { background: #176b45; color: white; padding: 22px 5%; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+        header h1 { margin: 0; }
+        header p { margin: 6px 0 0; }
+        header a { color: white; }
+        main { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+        h2 { margin-top: 28px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .card { display: block; background: white; padding: 22px; border-radius: 12px; text-decoration: none; color: inherit; border: 1px solid #e0e9e3; box-shadow: 0 4px 16px #00000008; }
+        .card:hover { border-color: #176b45; transform: translateY(-2px); }
+        .card h3 { color: #176b45; margin: 0 0 8px; }
+        .card p { margin: 0; color: #5b6b61; line-height: 1.5; }
+        .top-links { display: flex; gap: 16px; flex-wrap: wrap; }
+        footer { text-align: center; padding: 24px; color: #64746a; }
+    </style>
+</head>
+<body>
+<header>
+    <div>
+        <h1>VARAM</h1>
+        <p>{{ facility }}</p>
+    </div>
+    <div class="top-links">
+        <a href="/">Daily Census</a>
+        
+<form method="post" action="{% url 'logout' %}" style="margin:0">
+    {% csrf_token %}
+    <button type="submit" style="background:none;border:0;color:white;text-decoration:underline;cursor:pointer;font:inherit;padding:0">
+        Logout
+    </button>
+</form>
+>
+    </div>
+</header>
+<main>
+    <h2>Clinical Management</h2>
+    <div class="grid">
+        <a class="card" href="/"><h3>Daily OP Census</h3><p>Daily outpatient census and related actions.</p></a>
+        <a class="card" href="{% url 'ip_register' %}"><h3>IP Register</h3><p>Inpatient registration and records.</p></a>
+        <a class="card" href="{% url 'daily_disease_count' %}"><h3>Disease Classification</h3><p>Daily disease counts and classification.</p></a>
+        <a class="card" href="{% url 'daily_ncd_count' %}"><h3>NCD Register</h3><p>Daily non-communicable disease reporting.</p></a>
+        <a class="card" href="{% url 'anc_register' %}"><h3>ANC Register</h3><p>Existing antenatal care records and reports.</p></a>
+        <a class="card" href="{% url 'monthly_disease_report' %}"><h3>Disease Reports</h3><p>Monthly disease reporting.</p></a>
+        <a class="card" href="{% url 'ip_fortnightly_report' %}"><h3>Fortnightly IP Report</h3><p>Inpatient reporting for the reporting period.</p></a>
+        <a class="card" href="{% url 'centre_profile' %}"><h3>Facility Profile</h3><p>View and update facility details.</p></a>
+    </div>
+
+    <h2>Registers</h2>
+    <div class="grid">
+        <a class="card" href="{% url 'registers:nominal_list' %}"><h3>Patient Register</h3><p>Search and manage nominal patient records.</p></a>
+        <a class="card" href="{% url 'registers:external_therapy_daily' %}"><h3>External Therapy</h3><p>Daily therapy records.</p></a>
+        <a class="card" href="{% url 'registers:external_therapy_report' %}"><h3>Therapy Reports</h3><p>Monthly therapy reporting.</p></a>
+        <a class="card" href="{% url 'registers:list' %}"><h3>Other Registers</h3><p>Open the configurable register system.</p></a>
+    </div>
+
+    {% if request.user.is_staff %}
+    <h2>Administration</h2>
+    <div class="grid">
+        <a class="card" href="/admin/"><h3>Django Admin</h3><p>Administrative tools, subject to permissions.</p></a>
+    </div>
+    {% endif %}
+</main>
+<footer>VARAM Clinical Management System</footer>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Fortnightly Report | VARAM</title>
+</head>
+<body>
+<style>
+    .report-wrap { max-width: 1150px; margin: 20px auto; padding: 20px; color: #18352a; }
+    .report-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .report-title { color: #176b45; margin-bottom: 6px; }
+    .filter-panel, .summary-panel { background: #f5f8f5; border: 1px solid #dce7df; border-radius: 12px; padding: 16px; margin: 18px 0; }
+    .filters { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+    .filters label { display: block; font-weight: 600; margin-bottom: 5px; }
+    input[type=date] { padding: 9px; border: 1px solid #bdcec3; border-radius: 7px; }
+    .btn { display: inline-block; padding: 10px 14px; border: 0; border-radius: 7px; background: #176b45; color: white; text-decoration: none; cursor: pointer; font-weight: 600; }
+    .btn-secondary { background: #425c50; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .summary-card { background: white; border: 1px solid #dce7df; border-radius: 10px; padding: 14px; }
+    .summary-card h3 { margin: 0 0 12px; color: #176b45; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 24px; background: white; }
+    th, td { border: 1px solid #dce2dd; padding: 9px; text-align: left; }
+    th { background: #176b45; color: white; }
+    .table-wrap { overflow-x: auto; }
+    @media print {
+        .no-print, .filter-panel { display: none !important; }
+        .report-wrap { max-width: none; margin: 0; padding: 0; }
+        body { background: white !important; }
+        .summary-panel, .summary-card { background: white; }
+        table { font-size: 10pt; page-break-inside: auto; }
+        tr { page-break-inside: avoid; }
+        h2 { page-break-after: avoid; }
+    }
+</style>
+
+<div class="report-wrap">
+    <div class="report-head">
+        <div>
+            <h1 class="report-title">IP Fortnightly Report</h1>
+            <p>Reporting period: <strong>{{ start_date|date:"d-m-Y" }}</strong> to <strong>{{ end_date|date:"d-m-Y" }}</strong></p>
+        </div>
+        <div class="no-print">
+            <button class="btn" type="button" onclick="window.print()">Print / Save PDF</button>
+            <a class="btn btn-secondary" href="?start_date={{ start_date|date:'Y-m-d' }}&amp;end_date={{ end_date|date:'Y-m-d' }}&amp;export=excel">Download Excel</a>
+        </div>
+    </div>
+
+    <div class="filter-panel no-print">
+        <form method="get" class="filters">
+            <div>
+                <label for="start_date">From date</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" required>
+            </div>
+            <div>
+                <label for="end_date">To date</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" required>
+            </div>
+            <button class="btn" type="submit">Generate Report</button>
+        </form>
+    </div>
+
+    <div class="summary-panel">
+        <h2>Fortnight Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-card">
+                <h3>Admissions</h3>
+                <p>Total: <strong>{{ admission_counts.total }}</strong></p>
+                <p>Male: {{ admission_counts.male }} | Female: {{ admission_counts.female }}</p>
+                <p>Children: {{ admission_counts.children }}</p>
+            </div>
+            <div class="summary-card">
+                <h3>Discharges</h3>
+                <p>Total: <strong>{{ discharge_counts.total }}</strong></p>
+                <p>Male: {{ discharge_counts.male }} | Female: {{ discharge_counts.female }}</p>
+                <p>Children: {{ discharge_counts.children }}</p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Historical IP Census</h2>
+    <p>Historical patient counts recorded in Daily Census before 08-10-2026. These are census counts, not admission or discharge totals.</p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Morning Male</th>
+                    <th>Morning Female</th>
+                    <th>Morning Male Child</th>
+                    <th>Morning Female Child</th>
+                    <th>Morning Total</th>
+                    <th>Evening Male</th>
+                    <th>Evening Female</th>
+                    <th>Evening Male Child</th>
+                    <th>Evening Female Child</th>
+                    <th>Evening Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for record in historical_census %}
+                <tr>
+                    <td>{{ record.date|date:"d-m-Y" }}</td>
+                    <td>{{ record.ip_morning_male }}</td>
+                    <td>{{ record.ip_morning_female }}</td>
+                    <td>{{ record.ip_morning_male_child }}</td>
+                    <td>{{ record.ip_morning_female_child }}</td>
+                    <td>{{ record.ip_morning_male|add:record.ip_morning_female|add:record.ip_morning_male_child|add:record.ip_morning_female_child }}</td>
+                    <td>{{ record.ip_evening_male }}</td>
+                    <td>{{ record.ip_evening_female }}</td>
+                    <td>{{ record.ip_evening_male_child }}</td>
+                    <td>{{ record.ip_evening_female_child }}</td>
+                    <td>{{ record.ip_evening_male|add:record.ip_evening_female|add:record.ip_evening_male_child|add:record.ip_evening_female_child }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="11">No historical IP census records found for this period.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Admissions During Reporting Period</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>#</th><th>Admission Date</th><th>Patient Name</th><th>Sex</th><th>Child</th><th>Session</th></tr></thead>
+            <tbody>
+            {% for patient in admissions %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ patient.admission_date|date:"d-m-Y" }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.get_sex_display }}</td>
+                    <td>{% if patient.is_child %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ patient.get_admission_session_display|default:patient.admission_session }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No admissions found for this period.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Discharges During Reporting Period</h2>
+    <div class="table-wrap">
+        <table>
+            <thead><tr><th>#</th><th>Discharge Date</th><th>Patient Name</th><th>Sex</th><th>Child</th><th>Session</th></tr></thead>
+            <tbody>
+            {% for patient in discharges %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ patient.discharge_date|date:"d-m-Y" }}</td>
+                    <td>{{ patient.name }}</td>
+                    <td>{{ patient.get_sex_display }}</td>
+                    <td>{% if patient.is_child %}Yes{% else %}No{% endif %}</td>
+                    <td>{{ patient.get_discharge_session_display|default:patient.discharge_session }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="6">No discharges found for this period.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

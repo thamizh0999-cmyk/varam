@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Disease Classification Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 24px;
+            color: #24352b;
+            background: #f5f7f4;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+        }
+        h1 { color: #246b45; margin-top: 0; }
+        .filters, .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: end;
+            margin: 18px 0;
+        }
+        label { display: block; margin-bottom: 6px; font-weight: bold; }
+        input, button, .button {
+            padding: 10px 12px;
+            border: 1px solid #ccd5ce;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        button, .button {
+            background: #246b45;
+            color: white;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .card {
+            background: #edf5ef;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        .card strong { display: block; font-size: 25px; margin-top: 8px; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 11px; border: 1px solid #dce3dd; text-align: left; }
+        th { background: #246b45; color: white; }
+        td.number { text-align: center; }
+        tfoot { font-weight: bold; background: #edf5ef; }
+        .note { color: #59675e; font-size: 13px; margin-top: 16px; }
+        @media print {
+            body { background: white; margin: 0; }
+            .container { padding: 0; max-width: none; }
+            .filters, .actions, .note.no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>IP Disease Classification Report</h1>
+    <p>Inpatient disease-wise patient summary</p>
+
+    <form method="get" class="filters">
+        <div>
+            <label for="start_date">From date</label>
+            <input type="date" id="start_date" name="start_date"
+                   value="{{ start_date|date:'Y-m-d' }}" required>
+        </div>
+        <div>
+            <label for="end_date">To date</label>
+            <input type="date" id="end_date" name="end_date"
+                   value="{{ end_date|date:'Y-m-d' }}" required>
+        </div>
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <div class="actions">
+        <button type="button" onclick="window.print()">Print / Save PDF</button>
+        <a class="button"
+           href="?start_date={{ start_date|date:'Y-m-d' }}&end_date={{ end_date|date:'Y-m-d' }}&export=excel">
+            Export Excel
+        </a>
+        <a class="button" href="/ip/">IP Register</a>
+        <a class="button" href="/ip/diseases/">IP Disease Entry</a>
+        <a class="button" href="/ip/ncd/">IP NCD Entry</a>
+    </div>
+
+    <p>
+        <strong>Reporting period:</strong>
+        {{ start_date|date:"d-m-Y" }} to {{ end_date|date:"d-m-Y" }}
+    </p>
+
+    <div class="summary">
+        <div class="card">Adult Male<strong>{{ grand_total.male }}</strong></div>
+        <div class="card">Adult Female<strong>{{ grand_total.female }}</strong></div>
+        <div class="card">Children<strong>{{ grand_total.children }}</strong></div>
+        <div class="card">Disease-wise Total<strong>{{ grand_total.total }}</strong></div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Disease</th>
+                    <th>Male</th>
+                    <th>Female</th>
+                    <th>Children</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in report_rows %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ row.disease.name }}</td>
+                    <td class="number">{{ row.male }}</td>
+                    <td class="number">{{ row.female }}</td>
+                    <td class="number">{{ row.children }}</td>
+                    <td class="number">{{ row.total }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No IP disease records found for this period.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+    <tr>
+        <td></td>
+        <td>GRAND TOTAL</td>
+        <td class="number">{{ grand_total.male }}</td>
+        <td class="number">{{ grand_total.female }}</td>
+        <td class="number">{{ grand_total.children }}</td>
+        <td class="number">{{ grand_total.total }}</td>
+    </tr>
+</tfoot>
+        </table>
+    </div>
+
+    <p class="note">
+        Reporting rule: each patient is counted once per disease during the selected
+        period. Children are counted separately from adult males and females.
+        A patient with multiple diseases appears in each relevant disease category.
+        Therefore, the disease-wise grand total may exceed the number of unique patients.
+    </p>
+</div>
+</body>
+</html>

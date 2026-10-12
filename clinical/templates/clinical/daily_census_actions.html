@@ -1,0 +1,15 @@
+﻿<div class="save-card">
+
+    <button type="submit" class="save-button">
+        {% if is_editing %}
+            Update Daily Census
+        {% else %}
+            Save Daily Census
+        {% endif %}
+    </button>
+
+    <a href="{% url 'ip_register' %}" class="ip-button">
+        Go to IP Register →
+    </a>
+
+</div>

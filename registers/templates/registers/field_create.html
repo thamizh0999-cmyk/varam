@@ -1,0 +1,44 @@
+﻿{% extends "registers/base.html" %}
+{% block title %}Add Field - VARAM{% endblock %}
+{% block content %}
+<div class="card">
+    <h1>Add Field</h1>
+    <p class="muted">Register: {{ register.title }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="label">Field label *</label>
+        <input id="label" name="label" maxlength="100" required
+               placeholder="e.g. Quantity, Rate, Total Amount">
+
+        <label for="field_type">Field type</label>
+        <select id="field_type" name="field_type">
+            {% for value, label in field_types %}
+            <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="choices_text">Dropdown options (one per line)</label>
+        <textarea id="choices_text" name="choices_text" rows="4"
+                  placeholder="Male&#10;Female&#10;Other"></textarea>
+
+        <label for="formula">Formula (for calculated fields)</label>
+        <input id="formula" name="formula" maxlength="255"
+               placeholder="e.g. quantity * rate">
+        <p class="muted">
+            Use numeric field keys and +, -, *, /, and parentheses.
+            Example: quantity * rate. Formula fields will be calculated
+            automatically when an entry is saved.
+        </p>
+
+        <label><input type="checkbox" name="required"> Required field</label>
+
+        <div class="actions">
+            <button class="btn" type="submit">Save Field</button>
+            <a class="btn secondary"
+               href="{% url 'registers:detail' register_id=register.pk %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

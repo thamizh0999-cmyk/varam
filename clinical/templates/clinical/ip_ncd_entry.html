@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IP NCD Entry | VARAM</title>
+<style>
+body{margin:0;background:#f5f8f4;color:#20332a;font-family:Arial,sans-serif}
+.container{max-width:1100px;margin:25px auto;padding:16px}
+header{background:linear-gradient(120deg,#124c34,#258456);color:white;padding:24px;border-radius:12px}
+header h1{margin:0 0 8px}header p{margin:0}
+.panel{background:white;border:1px solid #dce5dc;border-radius:12px;padding:20px;margin-top:18px}
+label{display:block;font-weight:700;margin:12px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5ce;border-radius:7px;box-sizing:border-box;background:white}
+button,.btn{display:inline-block;border:0;border-radius:7px;padding:11px 16px;background:#176b45;color:white;text-decoration:none;font-weight:700;cursor:pointer;margin-top:14px}
+.btn-light{background:#e9f1eb;color:#124c34}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th,td{padding:10px;border:1px solid #dce5dc;text-align:left}
+th{background:#eaf2eb}
+.table-wrap{overflow-x:auto}
+.message{padding:10px;background:#e6f5e8;border-radius:7px;margin-top:10px}
+.errorlist{color:#b42318}
+@media(max-width:650px){.form-grid{grid-template-columns:1fr}.container{margin:8px auto;padding:10px}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>VARAM ? IP NCD Entry</h1>
+<p>Record non-communicable diseases for admitted in-patients</p>
+</header>
+
+<div class="panel">
+<a class="btn btn-light" href="/ip/">Back to IP Register</a>
+<a class="btn btn-light" href="/ip/diseases/">IP Disease Entry</a>
+<h2>Add NCD Record</h2>
+
+{% if messages %}
+{% for message in messages %}
+<div class="message">{{ message }}</div>
+{% endfor %}
+{% endif %}
+
+<form method="post">
+{% csrf_token %}
+{{ form.non_field_errors }}
+<div class="form-grid">
+<div>
+<label for="{{ form.patient.id_for_label }}">IP Patient</label>
+{{ form.patient }}
+{{ form.patient.errors }}
+</div>
+<div>
+<label for="{{ form.disease.id_for_label }}">NCD Category</label>
+{{ form.disease }}
+{{ form.disease.errors }}
+</div>
+<div>
+<label for="{{ form.diagnosis_date.id_for_label }}">Diagnosis Date</label>
+{{ form.diagnosis_date }}
+{{ form.diagnosis_date.errors }}
+</div>
+<div>
+<label for="{{ form.notes.id_for_label }}">Notes</label>
+{{ form.notes }}
+{{ form.notes.errors }}
+</div>
+</div>
+<button type="submit">Save IP NCD</button>
+</form>
+</div>
+
+<div class="panel">
+<h2>Recent IP NCD Records</h2>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Date</th><th>Patient</th><th>NCD</th><th>Notes</th><th>Actions</th></tr></thead>
+<tbody>
+{% for record in records %}
+<tr>
+<td>{{ record.diagnosis_date|date:"d-m-Y" }}</td>
+<td>{{ record.patient.name }}</td>
+<td>{{ record.get_disease_display }}</td>
+<td>{{ record.notes|default:"-" }}</td><td><a href="/ip/ncd/{{ record.pk }}/edit/">Edit</a> | <a href="/ip/ncd/{{ record.pk }}/delete/">Delete</a></td>
+</tr>
+{% empty %}
+<tr><td colspan="5">No IP NCD records saved yet.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,18 @@
+{% extends "registers/base.html" %}
+{% block title %}My Registers ? VARAM{% endblock %}
+{% block content %}
+<div class="card">
+<h1>My Registers</h1>
+<p class="muted">Create and manage facility-specific registers in one place.</p>
+<div class="actions"><a class="btn" href="{% url 'registers:create' %}">+ Create Register</a></div>
+</div>
+<div class="card">
+{% if registers %}
+<table><thead><tr><th>Register</th><th>Type</th><th>Fields</th><th>Action</th></tr></thead><tbody>
+{% for register in registers %}
+<tr><td><strong>{{ register.title }}</strong><br><span class="muted">{{ register.description|default:""|truncatechars:90 }}</span></td><td>{{ register.get_register_type_display }}</td><td>{{ register.fields.count }}</td><td><a class="btn secondary" href="{% url 'registers:detail' register_id=register.pk %}">Open</a></td></tr>
+{% endfor %}
+</tbody></table>
+{% else %}<div class="empty"><h2>No registers yet</h2><p>Create your first register to get started.</p><a class="btn" href="{% url 'registers:create' %}">Create Register</a></div>{% endif %}
+</div>
+{% endblock %}

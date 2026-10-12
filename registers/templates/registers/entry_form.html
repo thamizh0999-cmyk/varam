@@ -1,0 +1,24 @@
+{% extends "registers/base.html" %}
+{% load register_filters %}
+{% block title %}{% if entry %}Edit{% else %}New{% endif %} Entry ? VARAM{% endblock %}
+{% block content %}
+<div class="card"><h1>{% if entry %}Edit Entry{% else %}New Entry{% endif %}</h1><p class="muted">{{ register.title }}</p>
+<form method="post">{% csrf_token %}
+<label for="entry_date">Entry date *</label><input type="date" id="entry_date" name="entry_date" required value="{% if entry %}{{ entry.entry_date|date:'Y-m-d' }}{% else %}{{ request.POST.entry_date|default:'' }}{% endif %}">
+{% for field in fields %}
+<label for="field_{{ field.pk }}">{{ field.label }}{% if field.required %} *{% endif %}</label>
+{% if field.field_type == "CHOICE" %}
+<select id="field_{{ field.pk }}" name="field_{{ field.pk }}" {% if field.required %}required{% endif %}><option value="">Select?</option>{% for choice in field.choices_list %}<option value="{{ choice }}" {% if entry.data|get_item:field.field_key == choice or request.POST|get_item:field.pk|stringformat:"s" == choice %}selected{% endif %}>{{ choice }}</option>{% endfor %}</select>
+{% elif field.field_type == "DATE" %}
+<input type="date" id="field_{{ field.pk }}" name="field_{{ field.pk }}" value="{{ entry.data|get_item:field.field_key|default:'' }}" {% if field.required %}required{% endif %}>
+{% elif field.field_type == "NUMBER" %}
+<input type="number" step="any" id="field_{{ field.pk }}" name="field_{{ field.pk }}" value="{{ entry.data|get_item:field.field_key|default:'' }}" {% if field.required %}required{% endif %}>
+{% elif field.field_type == "BOOLEAN" %}
+<select id="field_{{ field.pk }}" name="field_{{ field.pk }}"><option value="">Select?</option><option value="true">Yes</option><option value="false">No</option></select>
+{% else %}
+<input type="text" id="field_{{ field.pk }}" name="field_{{ field.pk }}" value="{{ entry.data|get_item:field.field_key|default:'' }}" {% if field.required %}required{% endif %}>
+{% endif %}
+{% endfor %}
+<div class="actions"><button class="btn" type="submit">Save Entry</button><a class="btn secondary" href="{% url 'registers:detail' register_id=register.pk %}">Cancel</a></div>
+</form></div>
+{% endblock %}

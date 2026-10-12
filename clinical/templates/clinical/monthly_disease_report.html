@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monthly Disease Classification Report | VARAM</title>
+<style>
+:root{--green:#176b45;--dark:#124c34;--cream:#f6f8f3;--border:#dce5dc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);font-family:Arial,Helvetica,sans-serif;color:#20332a}
+.container{max-width:1200px;margin:28px auto;padding:20px}
+.header{background:linear-gradient(120deg,#124c34,#258456);color:white;padding:25px;border-radius:14px}
+.header h1{margin:0 0 8px;font-size:25px}
+.header p{margin:0;opacity:.9}
+.panel{background:white;border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:18px}
+.filters{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+select{padding:11px;border:1px solid #cbd5ce;border-radius:7px;min-width:140px;background:white}
+button,.button{border:0;border-radius:7px;padding:11px 15px;background:var(--green);color:white;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;font-size:14px}
+.secondary{background:#e9f1eb;color:var(--dark)}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.summary{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:12px;margin-top:18px}
+.stat{border:1px solid var(--border);border-radius:10px;padding:15px;background:#fbfdfb}
+.stat span{display:block;font-size:13px;color:#637269}
+.stat strong{display:block;font-size:25px;margin-top:8px;color:var(--dark)}
+.report-heading{text-align:center;margin:8px 0 20px}
+.report-heading h2{margin:0 0 7px;font-size:21px}
+.report-heading p{margin:0;color:#526157}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:11px 10px;border:1px solid var(--border);text-align:right}
+th{background:#eaf2eb;color:#183f2d}
+th:nth-child(1),td:nth-child(1),th:nth-child(2),td:nth-child(2){text-align:left}
+tbody tr:nth-child(even){background:#fafcf9}
+tfoot td{font-weight:700;background:#e5f0e7}
+.empty{text-align:center!important;color:#6a756d;padding:25px}
+.note{font-size:12px;color:#68766c;margin-top:12px}
+@media(max-width:700px){.container{padding:12px;margin:10px auto}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.header h1{font-size:21px}.panel{padding:14px}}
+@media print{
+ body{background:white;color:#000}
+ .container{max-width:none;margin:0;padding:0}
+ .header{background:white!important;color:#000!important;border:0;padding:0 0 15px;border-radius:0}
+ .header p{opacity:1}
+ .filters,.actions,.no-print,.note{display:none!important}
+ .panel{border:0;padding:0;margin-top:12px}
+ .summary{gap:6px;margin:10px 0 18px}
+ .stat{padding:8px;border:1px solid #aaa}
+ .stat strong{font-size:17px;color:#000}
+ .stat span{color:#333}
+ th{background:#e8e8e8!important;color:#000!important}
+ th,td{padding:7px 6px;font-size:11px;border:1px solid #999}
+ .report-heading{margin-bottom:12px}
+ @page{size:A4 landscape;margin:12mm}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="header">
+<h1>VARAM ? Monthly Disease Classification</h1>
+<p>Disease-wise monthly summary of reported male, female and child cases</p>
+</header>
+
+<section class="panel no-print">
+<form method="get" class="filters">
+<div>
+<label for="month">Month</label>
+<select name="month" id="month">
+{% for number, name in month_choices %}
+<option value="{{ number }}" {% if month == number %}selected{% endif %}>{{ name }}</option>
+{% endfor %}
+</select>
+</div>
+<div>
+<label for="year">Year</label>
+<select name="year" id="year">
+{% for y in year_choices %}
+<option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+{% endfor %}
+</select>
+</div>
+<button type="submit">View Report</button>
+</form>
+<div class="actions">
+<button type="button" onclick="window.print()">Print / Save PDF</button>
+<a class="button secondary" href="?month={{ month }}&year={{ year }}&export=excel">Download Excel</a>
+<a class="button secondary" href="/diseases/daily/">Back to Daily Disease Entry</a>
+</div>
+</section>
+
+<section class="panel">
+<div class="report-heading">
+<h2>Monthly Disease Classification Report</h2>
+<p>{{ month_name }} {{ year }} ? {{ start_date|date:"d M Y" }} to {{ end_date|date:"d M Y" }}</p>
+</div>
+
+<div class="summary">
+<div class="stat"><span>Male cases</span><strong>{{ grand_male }}</strong></div>
+<div class="stat"><span>Female cases</span><strong>{{ grand_female }}</strong></div>
+<div class="stat"><span>Child cases</span><strong>{{ grand_child }}</strong></div>
+<div class="stat"><span>Total cases</span><strong>{{ grand_total }}</strong></div>
+</div>
+
+<div class="table-wrap" style="margin-top:20px">
+<table>
+<thead>
+<tr><th>Sl. No.</th><th>Disease classification</th><th>Male</th><th>Female</th><th>Child</th><th>Total</th><th>Days entered</th></tr>
+</thead>
+<tbody>
+{% for row in report_rows %}
+<tr>
+<td>{{ forloop.counter }}</td>
+<td>{{ row.name }}</td>
+<td>{{ row.male }}</td>
+<td>{{ row.female }}</td>
+<td>{{ row.child }}</td>
+<td><strong>{{ row.total }}</strong></td>
+<td>{{ row.days_entered }}</td>
+</tr>
+{% empty %}
+<tr><td colspan="7" class="empty">No disease records found for this month.</td></tr>
+{% endfor %}
+</tbody>
+{% if report_rows %}
+<tfoot>
+<tr><td></td><td>GRAND TOTAL</td><td>{{ grand_male }}</td><td>{{ grand_female }}</td><td>{{ grand_child }}</td><td>{{ grand_total }}</td><td></td></tr>
+</tfoot>
+{% endif %}
+</table>
+</div>
+<p class="note">Report totals are calculated from saved daily disease classification entries. ?Days entered? counts distinct dates with records for each disease.</p>
+</section>
+</div>
+</body>
+</html>

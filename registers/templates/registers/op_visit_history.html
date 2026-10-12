@@ -1,0 +1,67 @@
+{% extends "registers/base.html" %}
+{% block content %}
+<div style="max-width:1100px;margin:25px auto;padding:20px;">
+  <h2>OP Visit History</h2>
+
+  <p><strong>Facility:</strong> {{ facility }}</p>
+  <p><strong>Patient:</strong> {{ patient.name }}</p>
+  <p><strong>OP Number:</strong> {{ patient.op_number }}</p>
+  <p><strong>Age / Category:</strong> {{ patient.age }} / {% if patient.is_child %}Child{% else %}Adult{% endif %}</p>
+  <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p style="padding:9px;background:#fff0e0;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <p>
+    <a href="{% url 'registers:op_encounter_create' patient.id %}">+ Record OP Visit</a>
+    &nbsp;|&nbsp;
+    <a href="{% url 'registers:patient_therapy_create' patient.id %}">Therapy Selection</a>
+    &nbsp;|&nbsp;
+    <a href="{% url 'registers:nominal_list' %}">Back to Patient Register</a>
+  </p>
+
+  {% if encounters %}
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr style="background:#edf3ed;">
+          <th style="padding:10px;border:1px solid #ddd;">Date</th>
+          <th style="padding:10px;border:1px solid #ddd;">Session</th>
+          <th style="padding:10px;border:1px solid #ddd;">Case type</th>
+          <th style="padding:10px;border:1px solid #ddd;">Diagnosis</th>
+          <th style="padding:10px;border:1px solid #ddd;">Medicine prescribed</th>
+          <th style="padding:10px;border:1px solid #ddd;">Therapies</th>
+          <th style="padding:10px;border:1px solid #ddd;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for encounter in encounters %}
+        <tr>
+          <td style="padding:10px;border:1px solid #ddd;white-space:nowrap;">{{ encounter.encounter_date|date:"d-m-Y" }}</td>
+          <td style="padding:10px;border:1px solid #ddd;">{{ encounter.get_session_display }}</td>
+          <td style="padding:10px;border:1px solid #ddd;">{{ encounter.get_case_type_display }}</td>
+          <td style="padding:10px;border:1px solid #ddd;">{{ encounter.diagnosis|default:"?" }}</td>
+          <td style="padding:10px;border:1px solid #ddd;white-space:pre-wrap;">{{ encounter.medicine|default:"?" }}</td>
+          <td style="padding:10px;border:1px solid #ddd;">
+            {% for therapy in encounter.therapy_visits.all %}
+              {{ therapy.get_therapy_display }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              No therapy
+            {% endfor %}
+          </td>
+          <td style="padding:10px;border:1px solid #ddd;white-space:nowrap;">
+            <a href="{% url 'registers:op_encounter_edit' patient.id encounter.id %}">Edit visit</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>No OP visits recorded for this patient yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

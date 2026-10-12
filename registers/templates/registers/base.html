@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}VARAM Registers{% endblock %}</title>
+<style>
+:root{--green:#176b45;--cream:#f7f6ef;--ink:#24352d;--muted:#65736b;--line:#dce5dd}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Segoe UI,Arial,sans-serif}
+header{background:var(--green);color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header a{color:white;text-decoration:none}main{max-width:1100px;margin:28px auto;padding:0 16px}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h1{font-size:27px;margin:0 0 8px}h2{font-size:19px;margin-top:0}p{line-height:1.5}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+.btn{display:inline-block;background:var(--green);color:white;padding:10px 15px;border:0;border-radius:8px;text-decoration:none;cursor:pointer;font:inherit}
+.btn.secondary{background:white;color:var(--green);border:1px solid var(--green)}
+label{display:block;font-weight:600;margin:14px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #bdcbc1;border-radius:8px;font:inherit;background:white}
+input[type=checkbox]{width:auto}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:11px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#edf4ee}
+.notice{padding:12px;border-radius:8px;background:#eaf4ec;margin:10px 0}.muted{color:var(--muted)}.empty{padding:24px;text-align:center;color:var(--muted)}
+@media(max-width:600px){main{margin:16px auto}h1{font-size:23px}.card{padding:14px}table{font-size:14px}}
+</style>
+</head>
+<body>
+<header>
+  <strong><a href="{% url 'dashboard' %}">VARAM | Smart Registers</a></strong>
+  <nav style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <a href="{% url 'registers:nominal_list' %}">Nominal Register</a>
+    <a href="{% url 'registers:external_therapy_daily' %}">External Therapy</a>
+    <a href="{% url 'registers:external_therapy_report' %}">Monthly Reports</a>
+    <form method="post" action="{% url 'logout' %}" style="margin:0;">
+      {% csrf_token %}
+      <button type="submit" style="background:transparent;border:1px solid white;border-radius:6px;color:white;padding:6px 10px;cursor:pointer;font:inherit;">Logout</button>
+    </form>
+  </nav>
+  <span>{{ facility.centre_name|default:"Facility Registers" }}</span>
+</header>
+<main>
+{% if messages %}{% for message in messages %}<div class="notice">{{ message }}</div>{% endfor %}{% endif %}
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

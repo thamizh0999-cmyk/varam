@@ -1,0 +1,41 @@
+{% extends "registers/base.html" %}
+{% block content %}
+<div style="max-width:700px;margin:25px auto;padding:20px;">
+  <h2>Edit OP Encounter</h2>
+
+  <p><strong>Facility:</strong> {{ facility }}</p>
+  <p><strong>Patient:</strong> {{ patient.name }}</p>
+  <p><strong>OP Number:</strong> {{ patient.op_number }}</p>
+  <p><strong>Age / Category:</strong> {{ patient.age }} / {% if patient.is_child %}Child{% else %}Adult{% endif %}</p>
+  <p><strong>Gender:</strong> {{ patient.get_gender_display }}</p>
+  <p><strong>Visit date:</strong> {{ encounter.encounter_date|date:"d-m-Y" }}</p>
+  <p><strong>Session:</strong> {{ encounter.get_session_display }}</p>
+  <p><strong>Case type:</strong> {{ encounter.get_case_type_display }}</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p style="padding:9px;background:#fff0e0;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+
+    <label>Diagnosis</label>
+    <select name="diagnosis" required style="display:block;width:100%;padding:10px;margin:5px 0 16px;">
+      <option value="">-- Select diagnosis --</option>
+      {% for diagnosis in diagnoses %}
+        <option value="{{ diagnosis.pk }}" {% if selected_diagnosis and diagnosis.pk == selected_diagnosis.pk %}selected{% endif %}>
+          {{ diagnosis.name }}{% if diagnosis.tamil_name %} ? {{ diagnosis.tamil_name }}{% endif %}
+        </option>
+      {% endfor %}
+    </select>
+
+    <label>Medicine prescribed</label>
+    <textarea name="medicine" rows="5" style="display:block;width:100%;box-sizing:border-box;padding:10px;margin:5px 0 18px;">{{ encounter.medicine }}</textarea>
+
+    <button type="submit" style="padding:11px 20px;">Save Changes</button>
+    <a href="{% url 'registers:nominal_list' %}" style="margin-left:12px;">Cancel</a>
+  </form>
+</div>
+{% endblock %}

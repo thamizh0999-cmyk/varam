@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VARAM Monthly Top 20 Diseases Report</title>
+</head>
+<body>
+
+<style>
+.report-wrap{max-width:1100px;margin:20px auto;padding:20px;background:#fff;color:#17251d}
+.report-title{text-align:center;line-height:1.5;margin-bottom:20px}
+.report-title h2{margin:4px 0;font-size:22px}
+.report-title h3{margin:4px 0;font-size:17px}
+.report-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin:18px 0}
+.report-controls label{display:block;font-weight:600;margin-bottom:5px}
+.report-controls select,.report-controls button,.report-controls a{padding:9px 12px;border:1px solid #9ca9a1;border-radius:5px;text-decoration:none}
+.report-controls button,.report-controls a{cursor:pointer;background:#176b45;color:white}
+.report-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}
+.report-table th,.report-table td{border:1px solid #46544b;padding:8px 7px;vertical-align:middle}
+.report-table th{text-align:center;background:#e7efe9}\n.report-table th:first-child{width:8%}\n.report-table th:nth-child(2){width:40%}\n.report-table th:nth-child(n+3){width:13%}\n.report-table td:nth-child(n+3){text-align:right}\n.report-table thead th{white-space:nowrap}
+.report-table td.num{text-align:right;font-variant-numeric:tabular-nums}
+.report-table .grand-total{font-weight:bold;background:#e7efe9}
+.report-footer{margin-top:35px;display:flex;justify-content:space-between}
+@media print{
+  body{background:#fff!important}
+  .report-controls,.no-print,nav,header,footer{display:none!important}
+  .report-wrap{max-width:none;margin:0;padding:0}
+  .report-title h2{font-size:18px}
+  .report-table{font-size:11px}
+  .report-table th,.report-table td{padding:5px}
+  @page{size:A4 landscape;margin:10mm}
+}
+</style>
+
+<div class="report-wrap">
+  <div class="report-title">
+    <h2>{{ month_name }} - {{ year }}</h2>
+    <h3>REGULAR - SIDDHA</h3>
+    <h3>{{ report_title }}</h3>
+    <p><strong>MCH, THOOTHUKUDI</strong></p>
+  </div>
+
+  <form method="get" class="report-controls no-print">
+    <div>
+      <label for="month">Month</label>
+      <select name="month" id="month">
+        {% for value,label in month_choices %}
+          <option value="{{ value }}" {% if value == month %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label for="year">Year</label>
+      <select name="year" id="year">
+        {% for value in year_choices %}
+          <option value="{{ value }}" {% if value == year %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit">View Report</button>
+    <a href="?month={{ month }}&year={{ year }}&export=excel">Export Excel</a>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </form>
+
+  <table class="report-table">
+    <thead>
+      <tr>
+        <th rowspan="2">Sl. No.</th>
+        <th rowspan="2">NAME OF THE DISEASE</th>
+        <th colspan="4">MCH, THOOTHUKUDI</th>
+      </tr>
+      <tr>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Child</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in report_rows %}
+      <tr>
+        <td class="num">{{ forloop.counter }}</td>
+        <td>{{ row.name }}</td>
+        <td class="num">{{ row.male }}</td>
+        <td class="num">{{ row.female }}</td>
+        <td class="num">{{ row.child }}</td>
+        <td class="num">{{ row.total }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="grand-total">
+        <td colspan="2">GRAND TOTAL</td>
+        <td class="num">{{ grand_male }}</td>
+        <td class="num">{{ grand_female }}</td>
+        <td class="num">{{ grand_child }}</td>
+        <td class="num">{{ grand_total }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="report-footer">
+    <span>Prepared by: __________________</span>
+    <span>Signature: __________________</span>
+  </div>
+</div>
+
+
+</body>
+</html>

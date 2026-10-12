@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>{% if editing %}VARAM - Edit ANC Patient{% else %}VARAM - Add ANC Patient{% endif %}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f4;
+            margin: 0;
+            padding: 20px;
+            color: #26332a;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            background: #1f5f3b;
+            color: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .patient-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .item {
+            background: #f7faf7;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #68736b;
+            margin-bottom: 4px;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #1f5f3b;
+            color: white;
+            margin-right: 8px;
+        }
+
+        .secondary {
+            background: #6c757d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 11px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: left;
+        }
+
+        th {
+            background: #eef4ef;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #777;
+        }
+
+        @media (max-width: 800px) {
+            .patient-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 550px) {
+            .patient-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>{{ patient.name }}</h1>
+        <p>ANC Patient Record</p>
+    </div>
+
+   
+    <div class="card">
+
+        <a href="{% url 'anc_register' %}" class="button secondary">
+            ANC Register
+        </a>
+<a href="{% url 'anc_patient_edit' patient.pk %}" class="button">
+    Edit Patient Details
+</a>
+        <a href="/anc/{{ patient.id }}/visit/add/" class="button">
+            + Add ANC Visit
+        </a>
+
+    </div>
+
+
+    
+    <div class="card">
+
+        <h2>Patient Information</h2>
+
+        <div class="patient-grid">
+
+            <div class="item">
+                <div class="label">Name</div>
+                <div class="value">{{ patient.name }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Age</div>
+                <div class="value">{{ patient.age }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Mobile</div>
+                <div class="value">
+                    {{ patient.mobile_number|default:"-" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Pigmi No</div>
+                <div class="value">
+                    {{ patient.pigmi_no|default:"-" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">LMP</div>
+                <div class="value">
+                    {{ patient.lmp|date:"d-m-Y" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">EDD</div>
+                <div class="value">
+                    {{ patient.edd|date:"d-m-Y" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Height</div>
+                <div class="value">
+                    {% if patient.height_cm %}
+                        {{ patient.height_cm }} cm
+                    {% else %}
+                        -
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Blood Group</div>
+                <div class="value">
+                    {{ patient.blood_group|default:"-" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Menstrual History</div>
+                <div class="value">
+                    {{ patient.menstrual_history|default:"-" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Married at Age</div>
+                <div class="value">
+                    {{ patient.married_at_age|default:"-" }}
+                </div>
+            </div>
+
+            <div class="item">
+                <div class="label">Gravida</div>
+                <div class="value">{{ patient.gravida }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Para</div>
+                <div class="value">{{ patient.para }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Living</div>
+                <div class="value">{{ patient.living }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Abortion</div>
+                <div class="value">{{ patient.abortion }}</div>
+            </div>
+
+            <div class="item">
+                <div class="label">Address</div>
+                <div class="value">
+                    {{ patient.address|default:"-" }}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    
+    <div class="card">
+
+       
+<h2>ANC Visit History</h2>
+
+{% if visits %}
+<div style="overflow-x: auto;">
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Trimester</th>
+                <th>Weight (kg)</th>
+                <th>Hb</th>
+                <th>BP</th>
+                <th>Complications</th>
+                <th>Kit Issued</th>
+                <th>Kit Issue Date</th>
+                <th>Kit Trimester</th>
+                <th>Dosage</th>
+                <th>Delivery Week</th>
+                <th>Delivery Mode</th>
+                <th>Baby Sex</th>
+                <th>Baby Weight (kg)</th>
+                <th>Neonatal Jaundice</th>
+                <th>Baby Status</th>
+                <th>Mother Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for visit in visits %}
+            <tr>
+                <td>{{ visit.visit_date|date:"d-m-Y" }}</td>
+                <td>{{ visit.get_trimester_display }}</td>
+                <td>{{ visit.weight_kg|default_if_none:"-" }}</td>
+                <td>{{ visit.hb|default_if_none:"-" }}</td>
+                <td>{{ visit.bp|default:"-" }}</td>
+                <td>{{ visit.gdm_pih_complications|default:"-" }}</td>
+
+                <td>{% if visit.kit_issued %}Yes{% else %}No{% endif %}</td>
+                <td>
+                    {% if visit.kit_issue_date %}
+                        {{ visit.kit_issue_date|date:"d-m-Y" }}
+                    {% else %}-{% endif %}
+                </td>
+                <td>{{ visit.get_kit_trimester_display|default:visit.kit_trimester|default:"-" }}</td>
+                <td>{{ visit.dosage|default:"-" }}</td>
+                <td>{{ visit.week_of_delivery|default_if_none:"-" }}</td>
+                <td>{{ visit.mode_of_delivery|default:"-" }}</td>
+                <td>{{ visit.baby_sex|default:"-" }}</td>
+                <td>{{ visit.baby_weight_kg|default_if_none:"-" }}</td>
+
+                <td>
+                    {% if visit.neonatal_jaundice %}Yes{% else %}No{% endif %}
+                </td>
+
+                <td>{{ visit.baby_status|default:"-" }}</td>
+                <td>{{ visit.mother_status|default:"-" }}</td>
+                <td>
+    <a href="{% url 'anc_visit_edit' patient.pk visit.pk %}"
+       class="button">
+        Edit
+    </a>
+</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="empty">
+    <h3>No ANC visits recorded</h3>
+    <p>Add the first ANC visit using the button above.</p>
+</div>
+{% endif %}
+</div>
+</div>
+</body>
+</html>
+

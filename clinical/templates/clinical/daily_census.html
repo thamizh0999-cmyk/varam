@@ -1,0 +1,613 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VARAM - Daily Census</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7f5;
+            color: #173b2b;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #14532d;
+        }
+
+        .date-box {
+            margin-bottom: 20px;
+        }
+
+        .date-box label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        input[type="date"],
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #cbd5d0;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .census-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .census-table th,
+        .census-table td {
+            border: 1px solid #d8e2dc;
+            padding: 10px 6px;
+        }
+
+        .census-table th {
+            background: #e9f3ed;
+            font-size: 14px;
+        }
+
+        .census-table td:first-child {
+            font-weight: bold;
+            background: #f3f8f5;
+        }
+
+        .census-table input {
+            width: 75px;
+            text-align: center;
+        }
+
+        .legend {
+            margin-top: 12px;
+            font-size: 13px;
+            color: #52665b;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-box {
+            background: #f1f7f3;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .summary-box .label {
+            font-size: 14px;
+            color: #52665b;
+        }
+
+        .summary-box .value {
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #14532d;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .save-button,
+        .ip-button {
+            display: inline-block;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .save-button {
+            background: #176b3a;
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #12552e;
+        }
+
+        .ip-button {
+            background: #e8f1ec;
+            color: #14532d;
+            border: 1px solid #b9d2c1;
+        }
+
+        .ip-button:hover {
+            background: #dcebe2;
+        }
+
+        .ip-note {
+            background: #fff8e7;
+            border: 1px solid #ead9a7;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 18px;
+            color: #705d20;
+        }
+
+        .ip-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        .ip-table th,
+        .ip-table td {
+            border: 1px solid #d8e2dc;
+            padding: 10px;
+        }
+
+        .ip-table th {
+            background: #e9f3ed;
+        }
+
+        .ip-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #14532d;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            background: #e7f6ec;
+            border: 1px solid #b8dfc3;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            color: #14532d;
+        }
+
+        @media (max-width: 700px) {
+
+            .container {
+                margin: 10px auto;
+                padding: 10px;
+            }
+
+            .census-table {
+                font-size: 12px;
+            }
+
+            .census-table th,
+            .census-table td {
+                padding: 6px 3px;
+            }
+
+            .census-table input {
+                width: 48px;
+                padding: 7px 2px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .ip-table {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>VARAM - Daily Census</h1>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- DATE -->
+        <div class="card date-box">
+
+            <label for="{{ form.date.id_for_label }}">
+                Date
+            </label>
+
+            {{ form.date }}
+<script>
+document.getElementById("{{ form.date.id_for_label }}").addEventListener("change", function () {
+    window.location.href = "/?date=" + this.value;
+});
+</script>
+
+        </div>
+
+
+        <!-- OP CENSUS -->
+        <div class="card">
+
+            <h2>OP Census</h2>
+
+            <table class="census-table">
+
+                <thead>
+
+                    <tr>
+                        <th rowspan="2">Session</th>
+
+                        <th colspan="4">NEW CASE</th>
+
+                        <th colspan="4">OLD CASE</th>
+                    </tr>
+
+                    <tr>
+                        <th>Male</th>
+                        <th>Female</th>
+                        <th>Male Child</th>
+                        <th>Female Child</th>
+
+                        <th>Male</th>
+                        <th>Female</th>
+                        <th>Male Child</th>
+                        <th>Female Child</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>Morning</td>
+
+                        <td>
+                            {{ form.op_morning_new_male }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_new_female }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_new_male_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_new_female_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_old_male }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_old_female }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_old_male_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_morning_old_female_child }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>Evening</td>
+
+                        <td>
+                            {{ form.op_evening_new_male }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_new_female }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_new_male_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_new_female_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_old_male }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_old_female }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_old_male_child }}
+                        </td>
+
+                        <td>
+                            {{ form.op_evening_old_female_child }}
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            <div class="legend">
+                M = Male | F = Female | MC = Male Child | FC = Female Child
+            </div>
+
+
+            <!-- OP SUMMARY -->
+            <div class="summary">
+
+                <div class="summary-box">
+                    <div class="label">NEW CASES</div>
+                    <div class="value" id="op-new-total">0</div>
+                </div>
+
+                <div class="summary-box">
+                    <div class="label">OLD CASES</div>
+                    <div class="value" id="op-old-total">0</div>
+                </div>
+
+                <div class="summary-box">
+                    <div class="label">TOTAL OP</div>
+                    <div class="value" id="op-grand-total">0</div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- SAVE + IP BUTTON -->
+        <div class="card">
+
+            <div class="actions">
+
+                <button type="submit" class="save-button">
+
+                    {% if is_editing %}
+                        Update Daily Census
+                    {% else %}
+                        Save Daily Census
+                    {% endif %}
+
+                </button>
+
+
+                <a href="{% url 'ip_register' %}" class="ip-button">
+                    Go to IP Register →
+                </a>
+
+            </div>
+
+        </div>
+
+    </form>
+
+
+    <!-- AUTOMATIC IP CENSUS -->
+    <div class="card">
+
+        <h2>IP Census — Automatic</h2>
+
+        <div class="ip-note">
+            No need to enter New or Old IP cases here.
+            VARAM calculates IP census automatically from the
+            <strong>IP Patient Register</strong>.
+        </div>
+
+
+        <table class="ip-table">
+
+            <thead>
+
+                <tr>
+                    <th>Session</th>
+                    <th>New IP</th>
+                    <th>Old IP</th>
+                    <th>Total IP</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+
+                    <td><strong>Morning</strong></td>
+
+                    <td>
+                        {{ ip_summary.morning_new_total }}
+                    </td>
+
+                    <td>
+                        {{ ip_summary.morning_old_total }}
+                    </td>
+
+                    <td class="ip-total">
+                        {{ ip_summary.morning_total }}
+                    </td>
+
+                </tr>
+
+
+                <tr>
+
+                    <td><strong>Evening</strong></td>
+
+                    <td>
+                        {{ ip_summary.evening_new_total }}
+                    </td>
+
+                    <td>
+                        {{ ip_summary.evening_old_total }}
+                    </td>
+
+                    <td class="ip-total">
+                        {{ ip_summary.evening_total }}
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+
+        <div class="actions">
+
+            <a href="{% url 'ip_register' %}" class="ip-button">
+                Open IP Patient Register →
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+function getValue(fieldName) {
+
+    const field = document.getElementById(
+        "id_" + fieldName
+    );
+
+    if (!field) {
+        return 0;
+    }
+
+    const value = parseInt(field.value);
+
+    return isNaN(value) ? 0 : value;
+}
+
+
+function calculateOPTotals() {
+
+    const newFields = [
+        "op_morning_new_male",
+        "op_morning_new_female",
+        "op_morning_new_male_child",
+        "op_morning_new_female_child",
+
+        "op_evening_new_male",
+        "op_evening_new_female",
+        "op_evening_new_male_child",
+        "op_evening_new_female_child"
+    ];
+
+    const oldFields = [
+        "op_morning_old_male",
+        "op_morning_old_female",
+        "op_morning_old_male_child",
+        "op_morning_old_female_child",
+
+        "op_evening_old_male",
+        "op_evening_old_female",
+        "op_evening_old_male_child",
+        "op_evening_old_female_child"
+    ];
+
+
+    let newTotal = 0;
+    let oldTotal = 0;
+
+
+    newFields.forEach(function(field) {
+        newTotal += getValue(field);
+    });
+
+
+    oldFields.forEach(function(field) {
+        oldTotal += getValue(field);
+    });
+
+
+    document.getElementById("op-new-total").textContent =
+        newTotal;
+
+    document.getElementById("op-old-total").textContent =
+        oldTotal;
+
+    document.getElementById("op-grand-total").textContent =
+        newTotal + oldTotal;
+}
+
+
+document.querySelectorAll(
+    'input[type="number"]'
+).forEach(function(input) {
+
+    input.addEventListener(
+        "input",
+        calculateOPTotals
+    );
+
+});
+
+
+calculateOPTotals();
+
+</script>
+
+</body>
+</html>
+

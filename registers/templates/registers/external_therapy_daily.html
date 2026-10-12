@@ -1,0 +1,64 @@
+﻿{% extends "registers/base.html" %}
+
+{% block content %}
+<div class="container" style="max-width:900px;margin:25px auto;padding:20px;">
+    <h2>External Therapy Register</h2>
+    <p><strong>System:</strong> Siddha</p>
+    <p><strong>Facility:</strong> {{ facility }}</p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding:10px;margin:8px 0;border-radius:6px;background:#e8f5e9;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="get" style="margin:20px 0;">
+        <label for="date"><strong>Treatment date:</strong></label>
+        <input type="date" id="date" name="date"
+               value="{{ treatment_date|date:'Y-m-d' }}" required>
+        <button type="submit">Load Date</button>
+    </form>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="treatment_date"
+               value="{{ treatment_date|date:'Y-m-d' }}">
+
+        <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;">
+                <thead>
+                    <tr style="background:#e8f0e8;">
+                        <th style="padding:10px;border:1px solid #ccc;">Sl. No.</th>
+                        <th style="padding:10px;border:1px solid #ccc;text-align:left;">Names of External Therapy</th>
+                        <th style="padding:10px;border:1px solid #ccc;">Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td style="padding:9px;border:1px solid #ccc;text-align:center;">{{ forloop.counter }}</td>
+                        <td style="padding:9px;border:1px solid #ccc;">{{ row.label }}</td>
+                        <td style="padding:9px;border:1px solid #ccc;text-align:center;">
+                            <input type="number" min="0" step="1"
+                                   name="count_{{ row.code }}"
+                                   value="{{ row.count }}" required
+                                   style="width:100px;padding:7px;">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p style="margin-top:18px;">
+            <button type="submit" style="padding:11px 22px;cursor:pointer;">
+                Save Daily Counts
+            </button>
+            <a href="{% url 'registers:external_therapy_report' %}"
+               style="margin-left:12px;">View Monthly Report</a>
+        </p>
+    </form>
+</div>
+{% endblock %}

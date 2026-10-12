@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edit IP Record | VARAM</title>
+<style>
+body{font-family:Arial;background:#f5f8f4;color:#20332a;margin:24px}
+main{max-width:800px;margin:auto;background:white;padding:24px;border-radius:12px}
+h1{color:#176b45}
+label{font-weight:bold}
+input,select,textarea{box-sizing:border-box;max-width:100%;padding:9px;margin:5px 0 12px}
+button,a{display:inline-block;padding:10px 14px;border:0;border-radius:6px;background:#176b45;color:white;text-decoration:none;cursor:pointer}
+</style>
+</head>
+<body><main>
+<h1>Edit IP {{ kind }} Record</h1>
+<p>Patient: {{ record.patient.name }}</p>
+<form method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button type="submit">Save Changes</button>
+<a href="{{ back_url }}">Cancel</a>
+</form>
+</main></body></html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VARAM - Add ANC Patient</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7f4;
+            margin: 0;
+            padding: 20px;
+            color: #26332a;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .header {
+            background: #1f5f3b;
+            color: white;
+            padding: 22px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            color: #1f5f3b;
+            border-bottom: 2px solid #e2ebe4;
+            padding-bottom: 8px;
+            margin-top: 25px;
+        }
+
+        .section-title:first-child {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        input,
+        textarea,
+        select {
+            padding: 10px;
+            border: 1px solid #ccd5ce;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .error {
+            color: #b42318;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .actions {
+            margin-top: 25px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .button {
+            border: none;
+            padding: 11px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .save {
+            background: #1f5f3b;
+            color: white;
+        }
+
+        .cancel {
+            background: #6c757d;
+            color: white;
+        }
+
+        @media (max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <title>{% if editing %}VARAM - Edit ANC Patient{% else %}VARAM - Add ANC Patient{% endif %}</title>
+        <p>Antenatal Beneficiary Registration</p>
+    </div>
+
+    <div class="card">
+
+        <form method="post">
+            {% csrf_token %}
+
+            <h2 class="section-title">Beneficiary Details</h2>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="{{ form.name.id_for_label }}">Name</label>
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.age.id_for_label }}">Age</label>
+                    {{ form.age }}
+                    {{ form.age.errors }}
+                </div>
+
+                <div class="field full">
+                    <label for="{{ form.address.id_for_label }}">Address</label>
+                    {{ form.address }}
+                    {{ form.address.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.mobile_number.id_for_label }}">Mobile Number</label>
+                    {{ form.mobile_number }}
+                    {{ form.mobile_number.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.pigmi_no.id_for_label }}">Pigmi No</label>
+                    {{ form.pigmi_no }}
+                    {{ form.pigmi_no.errors }}
+                </div>
+
+            </div>
+
+
+            <h2 class="section-title">Pregnancy Details</h2>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="{{ form.lmp.id_for_label }}">LMP</label>
+                    {{ form.lmp }}
+                    {{ form.lmp.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.edd.id_for_label }}">EDD</label>
+                    {{ form.edd }}
+                    {{ form.edd.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.height_cm.id_for_label }}">Height (cm)</label>
+                    {{ form.height_cm }}
+                    {{ form.height_cm.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.blood_group.id_for_label }}">Blood Group</label>
+                    {{ form.blood_group }}
+                    {{ form.blood_group.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.menstrual_history.id_for_label }}">
+                        Menstrual History
+                    </label>
+                    {{ form.menstrual_history }}
+                    {{ form.menstrual_history.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.married_at_age.id_for_label }}">
+                        Married at Age
+                    </label>
+                    {{ form.married_at_age }}
+                    {{ form.married_at_age.errors }}
+                </div>
+
+            </div>
+
+
+            <h2 class="section-title">Obstetric History</h2>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label for="{{ form.gravida.id_for_label }}">Gravida</label>
+                    {{ form.gravida }}
+                    {{ form.gravida.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.para.id_for_label }}">Para</label>
+                    {{ form.para }}
+                    {{ form.para.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.living.id_for_label }}">Living</label>
+                    {{ form.living }}
+                    {{ form.living.errors }}
+                </div>
+
+                <div class="field">
+                    <label for="{{ form.abortion.id_for_label }}">Abortion</label>
+                    {{ form.abortion }}
+                    {{ form.abortion.errors }}
+                </div>
+
+                <div class="field full">
+                    <label for="{{ form.past_history.id_for_label }}">
+                        Past History
+                    </label>
+                    {{ form.past_history }}
+                    {{ form.past_history.errors }}
+                </div>
+
+                <div class="field full">
+                    <label for="{{ form.obstetrics_history.id_for_label }}">
+                        Obstetrics History
+                    </label>
+                    {{ form.obstetrics_history }}
+                    {{ form.obstetrics_history.errors }}
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+                <button type="submit" class="button save">
+                   {% if editing %}Update ANC Patient{% else %}Save ANC Patient{% endif %}
+                </button>
+
+                <a href="{% url 'anc_register' %}" class="button cancel">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

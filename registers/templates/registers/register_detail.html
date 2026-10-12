@@ -1,0 +1,18 @@
+{% extends "registers/base.html" %}
+{% load register_filters %}
+{% block title %}{{ register.title }} ? VARAM{% endblock %}
+{% block content %}
+<div class="card"><h1>{{ register.title }}</h1><p class="muted">{{ register.get_register_type_display }} ? {{ register.description }}</p>
+<div class="actions"><a class="btn" href="{% url 'registers:field_create' register_id=register.pk %}">+ Add Field</a><a class="btn" href="{% url 'registers:entry_create' register_id=register.pk %}">+ New Entry</a><a class="btn secondary" href="{% url 'registers:list' %}">All Registers</a></div>
+</div>
+<div class="card"><h2>Configured Fields</h2>
+{% if fields %}<table><thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead><tbody>{% for field in fields %}<tr><td>{{ field.label }}</td><td>{{ field.get_field_type_display }}</td><td>{% if field.required %}Yes{% else %}No{% endif %}</td></tr>{% endfor %}</tbody></table>{% else %}<div class="empty">Add fields before entering data.</div>{% endif %}
+</div>
+<div class="card"><h2>Entries</h2>
+{% if entries %}
+<div style="overflow-x:auto"><table><thead><tr><th>Serial</th><th>Date</th>{% for field in fields %}<th>{{ field.label }}</th>{% endfor %}<th>Actions</th></tr></thead><tbody>
+{% for entry in entries %}<tr><td>{{ register.serial_prefix }}{{ entry.serial_number|stringformat:"05d" }}</td><td>{{ entry.entry_date|date:"d-m-Y" }}</td>{% for field in fields %}<td>{{ entry.data|get_item:field.field_key|default:"?" }}</td>{% endfor %}<td><a href="{% url 'registers:entry_edit' register_id=register.pk entry_id=entry.pk %}">Edit</a> ? <a href="{% url 'registers:entry_delete' register_id=register.pk entry_id=entry.pk %}">Delete</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty">No entries have been added.</div>{% endif %}
+</div>
+{% endblock %}

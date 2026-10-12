@@ -1,0 +1,365 @@
+﻿from datetime import date
+
+def calculate_ip_summary(target_date):
+
+    # =========================================================
+    # FIRST: use the new IP Patient Register when patient data
+    # exists.
+    # =========================================================
+
+    registered_patients = IPPatient.objects.filter(
+        admission_date__lte=target_date
+    )
+
+    if registered_patients.exists():
+
+        patients = registered_patients
+
+        # -----------------------------
+        # MORNING
+        # -----------------------------
+        morning_active = []
+
+        for patient in patients:
+
+            # Evening admission is not present in morning census
+            if (
+                patient.admission_date == target_date
+                and patient.admission_session == "EVENING"
+            ):
+                continue
+
+            # Discharged before target date
+            if (
+                patient.discharge_date
+                and patient.discharge_date < target_date
+            ):
+                continue
+
+            # Discharged during morning of target date
+            if (
+                patient.discharge_date == target_date
+                and patient.discharge_session == "MORNING"
+            ):
+                continue
+
+            morning_active.append(patient)
+
+        # -----------------------------
+        # EVENING
+        # -----------------------------
+        evening_active = []
+
+        for patient in patients:
+
+            # Discharged on target date is not present
+            # in evening census
+            if (
+                patient.discharge_date
+                and patient.discharge_date <= target_date
+            ):
+                continue
+
+            evening_active.append(patient)
+
+        morning_new = [
+            p for p in morning_active
+            if p.admission_date == target_date
+        ]
+
+        morning_old = [
+            p for p in morning_active
+            if p.admission_date < target_date
+        ]
+
+        evening_new = [
+            p for p in evening_active
+            if p.admission_date == target_date
+        ]
+
+        evening_old = [
+            p for p in evening_active
+            if p.admission_date < target_date
+        ]
+
+        def count_group(group, sex, child):
+            return sum(
+                1
+                for p in group
+                if p.sex == sex and p.is_child == child
+            )
+
+        summary = {}
+
+        # MORNING NEW
+        summary["morning_new_male"] = count_group(
+            morning_new, "M", False
+        )
+        summary["morning_new_female"] = count_group(
+            morning_new, "F", False
+        )
+        summary["morning_new_male_child"] = count_group(
+            morning_new, "M", True
+        )
+        summary["morning_new_female_child"] = count_group(
+            morning_new, "F", True
+        )
+
+        # MORNING OLD
+        summary["morning_old_male"] = count_group(
+            morning_old, "M", False
+        )
+        summary["morning_old_female"] = count_group(
+            morning_old, "F", False
+        )
+        summary["morning_old_male_child"] = count_group(
+            morning_old, "M", True
+        )
+        summary["morning_old_female_child"] = count_group(
+            morning_old, "F", True
+        )
+
+        # EVENING NEW
+        summary["evening_new_male"] = count_group(
+            evening_new, "M", False
+        )
+        summary["evening_new_female"] = count_group(
+            evening_new, "F", False
+        )
+        summary["evening_new_male_child"] = count_group(
+            evening_new, "M", True
+        )
+        summary["evening_new_female_child"] = count_group(
+            evening_new, "F", True
+        )
+
+        # EVENING OLD
+        summary["evening_old_male"] = count_group(
+            evening_old, "M", False
+        )
+        summary["evening_old_female"] = count_group(
+            evening_old, "F", False
+        )
+        summary["evening_old_male_child"] = count_group(
+            evening_old, "M", True
+        )
+        summary["evening_old_female_child"] = count_group(
+            evening_old, "F", True
+        )
+
+        summary["morning_new_total"] = sum([
+            summary["morning_new_male"],
+            summary["morning_new_female"],
+            summary["morning_new_male_child"],
+            summary["morning_new_female_child"],
+        ])
+
+        summary["morning_old_total"] = sum([
+            summary["morning_old_male"],
+            summary["morning_old_female"],
+            summary["morning_old_male_child"],
+            summary["morning_old_female_child"],
+        ])
+
+        summary["morning_total"] = (
+            summary["morning_new_total"]
+            + summary["morning_old_total"]
+        )
+
+        summary["evening_new_total"] = sum([
+            summary["evening_new_male"],
+            summary["evening_new_female"],
+            summary["evening_new_male_child"],
+            summary["evening_new_female_child"],
+        ])
+
+        summary["evening_old_total"] = sum([
+            summary["evening_old_male"],
+            summary["evening_old_female"],
+            summary["evening_old_male_child"],
+            summary["evening_old_female_child"],
+        ])
+
+        summary["evening_total"] = (
+            summary["evening_new_total"]
+            + summary["evening_old_total"]
+        )
+
+        summary["new_male"] = (
+            summary["morning_new_male"]
+            + summary["evening_new_male"]
+        )
+
+        summary["new_female"] = (
+            summary["morning_new_female"]
+            + summary["evening_new_female"]
+        )
+
+        summary["new_male_child"] = (
+            summary["morning_new_male_child"]
+            + summary["evening_new_male_child"]
+        )
+
+        summary["new_female_child"] = (
+            summary["morning_new_female_child"]
+            + summary["evening_new_female_child"]
+        )
+
+        summary["new_total"] = (
+            summary["new_male"]
+            + summary["new_female"]
+            + summary["new_male_child"]
+            + summary["new_female_child"]
+        )
+
+        summary["old_male"] = (
+            summary["morning_old_male"]
+            + summary["evening_old_male"]
+        )
+
+        summary["old_female"] = (
+            summary["morning_old_female"]
+            + summary["evening_old_female"]
+        )
+
+        summary["old_male_child"] = (
+            summary["morning_old_male_child"]
+            + summary["evening_old_male_child"]
+        )
+
+        summary["old_female_child"] = (
+            summary["morning_old_female_child"]
+            + summary["evening_old_female_child"]
+        )
+
+        summary["old_total"] = (
+            summary["old_male"]
+            + summary["old_female"]
+            + summary["old_male_child"]
+            + summary["old_female_child"]
+        )
+
+        summary["total"] = (
+            summary["new_total"]
+            + summary["old_total"]
+        )
+
+        return summary
+
+
+    # =========================================================
+    # FALLBACK FOR OLD DAILY CENSUS RECORDS
+    # =========================================================
+
+    old_record = DailyCensus.objects.filter(
+        date=target_date
+    ).first()
+
+    if old_record:
+
+        morning_old_total = (
+            old_record.ip_morning_male
+            + old_record.ip_morning_female
+            + old_record.ip_morning_male_child
+            + old_record.ip_morning_female_child
+        )
+
+        evening_old_total = (
+            old_record.ip_evening_male
+            + old_record.ip_evening_female
+            + old_record.ip_evening_male_child
+            + old_record.ip_evening_female_child
+        )
+
+        return {
+            "morning_new_male": 0,
+            "morning_new_female": 0,
+            "morning_new_male_child": 0,
+            "morning_new_female_child": 0,
+
+            "morning_old_male":
+                old_record.ip_morning_male,
+
+            "morning_old_female":
+                old_record.ip_morning_female,
+
+            "morning_old_male_child":
+                old_record.ip_morning_male_child,
+
+            "morning_old_female_child":
+                old_record.ip_morning_female_child,
+
+            "morning_new_total": 0,
+            "morning_old_total": morning_old_total,
+            "morning_total": morning_old_total,
+
+            "evening_new_male": 0,
+            "evening_new_female": 0,
+            "evening_new_male_child": 0,
+            "evening_new_female_child": 0,
+
+            "evening_old_male":
+                old_record.ip_evening_male,
+
+            "evening_old_female":
+                old_record.ip_evening_female,
+
+            "evening_old_male_child":
+                old_record.ip_evening_male_child,
+
+            "evening_old_female_child":
+                old_record.ip_evening_female_child,
+
+            "evening_new_total": 0,
+            "evening_old_total": evening_old_total,
+            "evening_total": evening_old_total,
+
+            "new_male": 0,
+            "new_female": 0,
+            "new_male_child": 0,
+            "new_female_child": 0,
+            "new_total": 0,
+
+            "old_male":
+                old_record.ip_morning_male
+                + old_record.ip_evening_male,
+
+            "old_female":
+                old_record.ip_morning_female
+                + old_record.ip_evening_female,
+
+            "old_male_child":
+                old_record.ip_morning_male_child
+                + old_record.ip_evening_male_child,
+
+            "old_female_child":
+                old_record.ip_morning_female_child
+                + old_record.ip_evening_female_child,
+
+            "old_total":
+                morning_old_total + evening_old_total,
+
+            "total":
+                morning_old_total + evening_old_total,
+        }
+
+    # No old record and no registered patients
+    return {
+        "morning_new_total": 0,
+        "morning_old_total": 0,
+        "morning_total": 0,
+        "evening_new_total": 0,
+        "evening_old_total": 0,
+        "evening_total": 0,
+        "new_male": 0,
+        "new_female": 0,
+        "new_male_child": 0,
+        "new_female_child": 0,
+        "new_total": 0,
+        "old_male": 0,
+        "old_female": 0,
+        "old_male_child": 0,
+        "old_female_child": 0,
+        "old_total": 0,
+        "total": 0,
+    }

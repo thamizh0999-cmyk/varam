@@ -1,0 +1,47 @@
+﻿{% extends "registers/base.html" %}
+{% block content %}
+<div style="max-width:1000px;margin:25px auto;padding:20px;">
+  <h2>Nominal Patient Register</h2>
+  <p><strong>Facility:</strong> {{ facility }}</p>
+  <p><a href="{% url 'registers:nominal_create' %}">+ Register New Patient</a></p>
+  <form method="get" style="margin:15px 0;">
+    <input type="search" name="q" value="{{ query }}" placeholder="Search OP number or patient name" style="padding:9px;width:280px;">
+    <button type="submit">Search</button>
+  </form>
+  <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+      <thead><tr style="background:#e8f0e8;">
+        <th style="padding:9px;border:1px solid #ccc;">S.No.</th>
+        <th style="padding:9px;border:1px solid #ccc;">OP Number</th>
+        <th style="padding:9px;border:1px solid #ccc;">Patient</th>
+        <th style="padding:9px;border:1px solid #ccc;">Age / Category</th>
+        <th style="padding:9px;border:1px solid #ccc;">Gender</th>
+        <th style="padding:9px;border:1px solid #ccc;">Diagnosis</th>
+        <th style="padding:9px;border:1px solid #ccc;">Actions</th>
+      </tr></thead>
+      <tbody>
+      {% for patient in patients %}
+        <tr>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.serial_number }}</td>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.op_number }}</td>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.name }}</td>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.age }} / {% if patient.is_child %}Child{% else %}Adult{% endif %}</td>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.get_gender_display }}</td>
+          <td style="padding:9px;border:1px solid #ccc;">{{ patient.diagnosis }}</td>
+          <td style="padding:9px;border:1px solid #ccc;white-space:nowrap;">
+            <a href="{% url 'registers:op_encounter_create' patient.id %}">OP Visit</a>
+            |
+            <a href="{% url 'registers:op_visit_history' patient.id %}">Visit History</a>
+            |
+            <a href="{% url 'registers:patient_therapy_create' patient.id %}">Therapy</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7" style="padding:15px;text-align:center;">No patients found.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:20px;"><a href="{% url 'registers:external_therapy_report' %}">Monthly External Therapy Report</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+﻿{% extends "registers/base.html" %}
+
+{% block content %}
+<div style="max-width:900px;margin:25px auto;padding:20px;">
+    <h2>Therapy Treatment Details in Numbers</h2>
+    <p><strong>System:</strong> Siddha</p>
+    <p><strong>Facility:</strong> {{ facility }}</p>
+
+    <form method="get" style="margin:20px 0;">
+        <label for="month"><strong>Select month:</strong></label>
+        <input type="month" id="month" name="month"
+               value="{{ month_value }}" required>
+        <button type="submit">Generate Report</button>
+    </form>
+
+    <p>
+        <strong>Reporting month:</strong> {{ month_value }}
+    </p>
+
+    <div style="margin:15px 0;">
+        <a href="{% url 'registers:external_therapy_daily' %}">
+            Daily Entry
+        </a>
+        &nbsp; | &nbsp;
+        <a href="{% url 'registers:external_therapy_excel' %}?month={{ month_value }}">
+            Export Excel
+        </a>
+        &nbsp; | &nbsp;
+        <button type="button" onclick="window.print()">Print Report</button>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8f0e8;">
+                <th style="padding:10px;border:1px solid #777;">Sl. No.</th>
+                <th style="padding:10px;border:1px solid #777;text-align:left;">
+                    Names of External Therapy
+                </th>
+                <th style="padding:10px;border:1px solid #777;">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td style="padding:9px;border:1px solid #777;text-align:center;">
+                    {{ forloop.counter }}
+                </td>
+                <td style="padding:9px;border:1px solid #777;">
+                    {{ row.label }}
+                </td>
+                <td style="padding:9px;border:1px solid #777;text-align:center;">
+                    {{ row.count }}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr style="font-weight:bold;background:#f2f2f2;">
+                <td colspan="2" style="padding:10px;border:1px solid #777;text-align:right;">
+                    TOTAL
+                </td>
+                <td style="padding:10px;border:1px solid #777;text-align:center;">
+                    {{ grand_total }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p style="margin-top:30px;">
+        Prepared by: ____________________
+        <span style="float:right;">Signature: ____________________</span>
+    </p>
+</div>
+
+<style>
+@media print {
+    nav, header, footer, button, form, a {
+        display: none !important;
+    }
+    body { color: #000 !important; background: #fff !important; }
+    table { page-break-inside: avoid; }
+    @page { size: A4 portrait; margin: 15mm; }
+}
+</style>
+{% endblock %}

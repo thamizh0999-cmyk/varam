@@ -1,0 +1,12 @@
+{% extends "registers/base.html" %}
+{% block title %}Create Register ? VARAM{% endblock %}
+{% block content %}
+<div class="card"><h1>Create Register</h1><p class="muted">Choose a title and register type. You can add fields next.</p>
+<form method="post">{% csrf_token %}
+<label for="title">Register title *</label><input id="title" name="title" maxlength="200" required value="{{ request.POST.title|default:'' }}" placeholder="e.g. OP Register">
+<label for="description">Description</label><textarea id="description" name="description" rows="3">{{ request.POST.description|default:'' }}</textarea>
+<label for="register_type">Register type</label><select id="register_type" name="register_type">{% for value,label in register_types %}<option value="{{ value }}" {% if request.POST.register_type == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+<label for="serial_prefix">Serial number prefix (optional)</label><input id="serial_prefix" name="serial_prefix" maxlength="30" value="{{ request.POST.serial_prefix|default:'' }}" placeholder="e.g. OP-">
+<div class="actions"><button class="btn" type="submit">Create Register</button><a class="btn secondary" href="{% url 'registers:list' %}">Cancel</a></div>
+</form></div>
+{% endblock %}

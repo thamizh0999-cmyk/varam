@@ -1,0 +1,44 @@
+﻿{% extends "registers/base.html" %}
+{% block content %}
+<div style="max-width:850px;margin:25px auto;padding:20px;">
+  <h2>Patient External Therapy</h2>
+  <p><strong>Patient:</strong> {{ patient.name }} | <strong>OP No.:</strong> {{ patient.op_number }}</p>
+  <p><strong>Age:</strong> {{ patient.age }} ({% if patient.is_child %}Child{% else %}Adult{% endif %})</p>
+  {% if messages %}{% for message in messages %}<p style="padding:9px;background:#e8f5e9;">{{ message }}</p>{% endfor %}{% endif %}
+  {% if encounters %}
+  <form method="post">
+    {% csrf_token %}
+    <label>OP encounter</label>
+    <select name="encounter_id" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+      <option value="">Select encounter</option>
+      {% for encounter in encounters %}
+      <option value="{{ encounter.id }}">{{ encounter.encounter_date|date:'d-m-Y' }} — {{ encounter.get_session_display }} — {{ encounter.get_case_type_display }}</option>
+      {% endfor %}
+    </select>
+    <label>Treatment date</label>
+    <input type="date" name="treatment_date" value="{{ today|date:'Y-m-d' }}" required style="display:block;width:100%;padding:9px;margin:5px 0 14px;">
+    <p><strong>Select therapies</strong></p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;">
+      {% for code, label in therapies %}
+      <label style="padding:10px;border:1px solid #ddd;border-radius:6px;">
+        <input type="checkbox" name="therapies" value="{{ code }}"> {{ label }}
+      </label>
+      {% endfor %}
+    </div>
+    <button type="submit" style="padding:11px 20px;margin-top:18px;">Save Selected Therapies</button>
+  </form>
+  {% else %}
+  <p>No OP encounter is recorded for this patient. Save an OP encounter first.</p>
+  {% endif %}
+  <h3 style="margin-top:30px;">Previous Therapy Records</h3>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr style="background:#e8f0e8;"><th style="padding:8px;border:1px solid #ccc;">Date</th><th style="padding:8px;border:1px solid #ccc;">Therapy</th></tr>
+    {% for visit in visits %}
+    <tr><td style="padding:8px;border:1px solid #ccc;">{{ visit.treatment_date|date:'d-m-Y' }}</td><td style="padding:8px;border:1px solid #ccc;">{{ visit.get_therapy_display }}</td></tr>
+    {% empty %}
+    <tr><td colspan="2" style="padding:10px;border:1px solid #ccc;">No therapy records yet.</td></tr>
+    {% endfor %}
+  </table>
+  <p style="margin-top:18px;"><a href="{% url 'registers:nominal_list' %}">Back to Nominal Register</a></p>
+</div>
+{% endblock %}

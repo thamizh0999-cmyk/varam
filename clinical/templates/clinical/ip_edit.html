@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Edit IP Patient</title>
+
+<style>
+
+body {
+    margin: 0;
+    padding: 20px;
+    background: #f4f7f5;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    max-width: 700px;
+    margin: auto;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+
+.field {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccd6d0;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 9px;
+    background: #236b45;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+}
+
+.back {
+    display: block;
+    margin-top: 15px;
+    color: #236b45;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+
+<h1>Edit IP Patient</h1>
+
+<form method="post">
+
+{% csrf_token %}
+
+<div class="field">
+    <label>Patient Name</label>
+    {{ form.name }}
+</div>
+
+<div class="field">
+    <label>Sex</label>
+    {{ form.sex }}
+</div>
+
+<div class="field">
+    <label>
+        {{ form.is_child }}
+        Child
+    </label>
+</div>
+
+<div class="field">
+    <label>Admission Date</label>
+    {{ form.admission_date }}
+</div>
+
+<div class="field">
+    <label>Admission Session</label>
+    {{ form.admission_session }}
+</div>
+
+<div class="field">
+    <label>Discharge Date</label>
+    {{ form.discharge_date }}
+</div>
+
+<div class="field">
+    <label>Discharge Session</label>
+    {{ form.discharge_session }}
+</div>
+
+<button type="submit">
+    Update IP Patient
+</button>
+
+</form>
+
+<a class="back" href="{% url 'ip_register' %}">
+    ← Back to IP Register
+</a>
+
+</div>
+
+</div>
+
+</body>
+
+</html>
