@@ -4,14 +4,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.shortcuts import redirect
 
+from clinical.views import DashboardLoginView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
         "accounts/login/",
-        auth_views.LoginView.as_view(
-            template_name="clinical/login.html",
-            redirect_authenticated_user=True,
-        ),
+        DashboardLoginView.as_view(),
         name="login",
     ),
     path(

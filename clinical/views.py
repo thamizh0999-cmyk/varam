@@ -32,8 +32,21 @@ from .models import (
      
 )
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import views as auth_views
+from django.urls import reverse_lazy
 from .facility_access import get_user_facility
 from .ip_utils import calculate_ip_summary
+
+
+class DashboardLoginView(auth_views.LoginView):
+    template_name = "clinical/login.html"
+    redirect_authenticated_user = True
+
+    def get_success_url(self):
+        # Always land on the dashboard after login, regardless of ?next=.
+        return reverse_lazy("dashboard")
+
+
 OFFICIAL_DISEASE_ORDER = [
     "Keelvayu",
     "Irumal",

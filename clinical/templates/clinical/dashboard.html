@@ -30,14 +30,13 @@
     </div>
     <div class="top-links">
         <a href="/">Daily Census</a>
-        
+
 <form method="post" action="{% url 'logout' %}" style="margin:0">
     {% csrf_token %}
     <button type="submit" style="background:none;border:0;color:white;text-decoration:underline;cursor:pointer;font:inherit;padding:0">
         Logout
     </button>
 </form>
->
     </div>
 </header>
 <main>
@@ -48,25 +47,34 @@
         <a class="card" href="{% url 'daily_disease_count' %}"><h3>Disease Classification</h3><p>Daily disease counts and classification.</p></a>
         <a class="card" href="{% url 'daily_ncd_count' %}"><h3>NCD Register</h3><p>Daily non-communicable disease reporting.</p></a>
         <a class="card" href="{% url 'anc_register' %}"><h3>ANC Register</h3><p>Existing antenatal care records and reports.</p></a>
+        <a class="card" href="{% url 'anc_patient_add' %}"><h3>Add ANC Patient</h3><p>Register a new antenatal care patient.</p></a>
+        <a class="card" href="{% url 'ip_disease_entry' %}"><h3>IP Disease Entry</h3><p>Record inpatient disease classifications.</p></a>
+        <a class="card" href="{% url 'ip_ncd_entry' %}"><h3>IP NCD Entry</h3><p>Record inpatient non-communicable disease entries.</p></a>
+        <a class="card" href="{% url 'disease_master' %}"><h3>Disease Master</h3><p>Manage the disease master list.</p></a>
+        <a class="card" href="{% url 'centre_profile' %}"><h3>Facility Profile</h3><p>View and update facility details.</p></a>
+    </div>
+
+    <h2>Reports</h2>
+    <div class="grid">
         <a class="card" href="{% url 'monthly_disease_report' %}"><h3>Disease Reports</h3><p>Monthly disease reporting.</p></a>
         <a class="card" href="{% url 'ip_fortnightly_report' %}"><h3>Fortnightly IP Report</h3><p>Inpatient reporting for the reporting period.</p></a>
-        <a class="card" href="{% url 'centre_profile' %}"><h3>Facility Profile</h3><p>View and update facility details.</p></a>
+        <a class="card" href="{% url 'ip_disease_report' %}"><h3>IP Disease Report</h3><p>Inpatient disease classification report.</p></a>
+        <a class="card" href="{% url 'ip_ncd_report' %}"><h3>IP NCD Report</h3><p>Inpatient non-communicable disease report.</p></a>
+        <a class="card" href="{% url 'monthly_top20_op_report' %}"><h3>Monthly Top 20 (OP)</h3><p>Top 20 outpatient diseases by month.</p></a>
+        <a class="card" href="{% url 'monthly_top20_ip_report' %}"><h3>Monthly Top 20 (IP)</h3><p>Top 20 inpatient diseases by month.</p></a>
+        <a class="card" href="{% url 'anc_monthly_report' %}"><h3>ANC Monthly Report</h3><p>Monthly antenatal care reporting.</p></a>
     </div>
 
     <h2>Registers</h2>
     <div class="grid">
         <a class="card" href="{% url 'registers:nominal_list' %}"><h3>Patient Register</h3><p>Search and manage nominal patient records.</p></a>
+        <a class="card" href="{% url 'registers:nominal_create' %}"><h3>Add Patient</h3><p>Register a new outpatient.</p></a>
         <a class="card" href="{% url 'registers:external_therapy_daily' %}"><h3>External Therapy</h3><p>Daily therapy records.</p></a>
         <a class="card" href="{% url 'registers:external_therapy_report' %}"><h3>Therapy Reports</h3><p>Monthly therapy reporting.</p></a>
+        <a class="card" href="{% url 'registers:create' %}"><h3>Create Register</h3><p>Create a new configurable register.</p></a>
         <a class="card" href="{% url 'registers:list' %}"><h3>Other Registers</h3><p>Open the configurable register system.</p></a>
     </div>
 
-    {% if request.user.is_staff %}
-    <h2>Administration</h2>
-    <div class="grid">
-        <a class="card" href="/admin/"><h3>Django Admin</h3><p>Administrative tools, subject to permissions.</p></a>
-    </div>
-    {% endif %}
 </main>
 <footer>VARAM Clinical Management System</footer>
 </body>

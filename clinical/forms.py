@@ -180,6 +180,7 @@ class ANCVisitForm(forms.ModelForm):
             "hb",
             "bp",
             "gdm_pih_complications",
+            "disease",
             "dosage",
             "kit_issued",
             "kit_issue_date",
@@ -199,4 +200,12 @@ class ANCVisitForm(forms.ModelForm):
             "kit_trimester": forms.Select(),
             "gdm_pih_complications": forms.Textarea(attrs={"rows": 2}),
             "dosage": forms.Textarea(attrs={"rows": 2}),
-        }                  
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["disease"].queryset = (
+            DiseaseMaster.objects.filter(is_active=True).order_by("name")
+        )
+        self.fields["disease"].required = False
+        self.fields["disease"].empty_label = "Select diagnosis (optional)"

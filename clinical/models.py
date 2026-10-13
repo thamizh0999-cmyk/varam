@@ -434,6 +434,14 @@ class ANCVisit(models.Model):
         blank=True,
     )
 
+    disease = models.ForeignKey(
+        DiseaseMaster,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="anc_visits",
+    )
+
     week_of_delivery = models.PositiveIntegerField(
         null=True,
         blank=True,
